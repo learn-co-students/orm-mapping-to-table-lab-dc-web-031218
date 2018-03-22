@@ -1,6 +1,7 @@
 class Student
 
 attr_accessor :name, :grade
+attr_reader :id
 
 def initialize(name, grade, id=nil)
   @name = name
@@ -19,5 +20,34 @@ def self.create_table
         SQL
     DB[:conn].execute(sql)
   end
+
+
+
+def self.drop_table
+  sql =  <<-SQL
+    DROP TABLE students
+      SQL
+  DB[:conn].execute(sql)
+end
+
+
+def save
+    sql = <<-SQL
+      INSERT INTO students (name, grade)
+      VALUES (?, ?)
+    SQL
+    DB[:conn].execute(sql, self.name, self.grade)
+    @id = DB[:conn].last_insert_row_id
+    self 
+
+  end
+
+
+  def self.create(name:, grade:)
+  new_Student = Student.new(name, grade)
+  new_Student.save
+
+  end
+
 
 end
